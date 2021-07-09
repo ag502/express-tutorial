@@ -10,55 +10,60 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(compression());
 
-app.get('/', (req, res) => {
+app.get('*', (req, res, next) => {
   fs.readdir('./data', (error, files) => {
-    const title = 'Welcome';
-    const description = 'Hello, node.js';
-    const list = template.list(files);
-    const html = template.HTML(
-      title,
-      list,
-      `<h2>${title}</h2>${description}`,
-      `<a href='/create'>create</a>`
-    );
-    res.send(html);
+    req.list = files;
+    next();
   });
 });
 
+app.get('/', (req, res) => {
+  const files = req.list;
+  const title = 'Welcome';
+  const description = 'Hello, node.js';
+  const list = template.list(files);
+  const html = template.HTML(
+    title,
+    list,
+    `<h2>${title}</h2>${description}`,
+    `<a href='/create'>create</a>`
+  );
+  res.send(html);
+});
+
 app.get('/page/:pageId', (req, res) => {
-  fs.readdir('./data', function (error, filelist) {
-    const filteredId = req.params.pageId;
-    fs.readFile(`./data/${filteredId}`, 'utf8', (err, description) => {
-      const title = filteredId;
-      const sanitizedTitle = sanitizeHtml(title);
-      const sanitizedDescription = sanitizeHtml(description, {
-        allowedTags: ['h1'],
-      });
-      const list = template.list(filelist);
-      const html = template.HTML(
-        sanitizedTitle,
-        list,
-        `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
-        ` <a href="/create">create</a>
+  const files = req.list;
+  const filteredId = req.params.pageId;
+  fs.readFile(`./data/${filteredId}`, 'utf8', (err, description) => {
+    const title = filteredId;
+    const sanitizedTitle = sanitizeHtml(title);
+    const sanitizedDescription = sanitizeHtml(description, {
+      allowedTags: ['h1'],
+    });
+    const list = template.list(files);
+    const html = template.HTML(
+      sanitizedTitle,
+      list,
+      `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
+      ` <a href="/create">create</a>
                 <a href="/update/${sanitizedTitle}">update</a>
                 <form action="/delete_process" method="post">
                   <input type="hidden" name="id" value="${sanitizedTitle}">
                   <input type="submit" value="delete">
                 </form>`
-      );
-      res.send(html);
-    });
+    );
+    res.send(html);
   });
 });
 
 app.get('/create', (req, res) => {
-  fs.readdir('./data', (error, filelist) => {
-    const title = 'WEB - create';
-    const list = template.list(filelist);
-    const html = template.HTML(
-      title,
-      list,
-      `
+  const files = req.list;
+  const title = 'WEB - create';
+  const list = template.list(files);
+  const html = template.HTML(
+    title,
+    list,
+    `
             <form action="/create_process" method="post">
               <p><input type="text" name="title" placeholder="title"></p>
               <p>
@@ -69,10 +74,9 @@ app.get('/create', (req, res) => {
               </p>
             </form>
           `,
-      ''
-    );
-    res.send(html);
-  });
+    ''
+  );
+  res.send(html);
 });
 
 app.post('/create_process', (req, res) => {
@@ -85,15 +89,15 @@ app.post('/create_process', (req, res) => {
 });
 
 app.get('/update/:pageId', (req, res) => {
-  fs.readdir('./data', (error, filelist) => {
-    const filteredId = req.params.pageId;
-    fs.readFile(`data/${filteredId}`, 'utf8', (err, description) => {
-      const title = filteredId;
-      const list = template.list(filelist);
-      const html = template.HTML(
-        title,
-        list,
-        `
+  const files = req.list;
+  const filteredId = req.params.pageId;
+  fs.readFile(`data/${filteredId}`, 'utf8', (err, description) => {
+    const title = filteredId;
+    const list = template.list(files);
+    const html = template.HTML(
+      title,
+      list,
+      `
               <form action="/update_process" method="post">
                 <input type="hidden" name="id" value="${title}">
                 <p><input type="text" name="title" placeholder="title" value="${title}"></p>
@@ -105,10 +109,9 @@ app.get('/update/:pageId', (req, res) => {
                 </p>
               </form>
               `,
-        `<a href="/create">create</a><a href="/update/${title}">update</a>`
-      );
-      res.send(html);
-    });
+      `<a href="/create">create</a><a href="/update/${title}">update</a>`
+    );
+    res.send(html);
   });
 });
 
@@ -121,7 +124,7 @@ app.post('/update_process', (req, res) => {
   });
 });
 
-app.use('/delete_process', (req, res) => {
+app.post('/delete_process', (req, res) => {
   const post = req.body;
   const id = post.id;
   const filteredId = id;
