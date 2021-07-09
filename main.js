@@ -6,6 +6,7 @@ const qs = require('querystring');
 const sanitizeHtml = require('sanitize-html');
 const template = require('./lib/template');
 
+app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(compression());
@@ -25,7 +26,9 @@ app.get('/', (req, res) => {
   const html = template.HTML(
     title,
     list,
-    `<h2>${title}</h2>${description}`,
+    `<h2>${title}</h2>${description}
+    <img src="/img/hello.jpg"/>
+    `,
     `<a href='/create'>create</a>`
   );
   res.send(html);
