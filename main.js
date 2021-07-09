@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const compression = require('compression');
 const fs = require('fs');
 const qs = require('querystring');
 const sanitizeHtml = require('sanitize-html');
@@ -7,6 +8,7 @@ const template = require('./lib/template');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(compression());
 
 app.get('/', (req, res) => {
   fs.readdir('./data', (error, files) => {

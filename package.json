@@ -10,6 +10,7 @@
   "author": "LeeJaeyun",
   "license": "ISC",
   "dependencies": {
+    "compression": "^1.7.4",
     "express": "^4.17.1",
     "sanitize-html": "^2.4.0"
   },
