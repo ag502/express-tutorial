@@ -5,6 +5,9 @@ const qs = require('querystring');
 const sanitizeHtml = require('sanitize-html');
 const template = require('./lib/template');
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 app.get('/', (req, res) => {
   fs.readdir('./data', (error, files) => {
     const title = 'Welcome';
@@ -71,17 +74,11 @@ app.get('/create', (req, res) => {
 });
 
 app.post('/create_process', (req, res) => {
-  let body = '';
-  req.on('data', (data) => {
-    body = body + data;
-  });
-  req.on('end', () => {
-    const post = qs.parse(body);
-    const title = post.title;
-    const description = post.description;
-    fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
-      res.redirect('/');
-    });
+  const post = req.body;
+  const title = post.title;
+  const description = post.description;
+  fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
+    res.redirect('/');
   });
 });
 
@@ -114,35 +111,20 @@ app.get('/update/:pageId', (req, res) => {
 });
 
 app.post('/update_process', (req, res) => {
-  let body = '';
-  req.on('data', (data) => {
-    body = body + data;
-  });
-  req.on('end', () => {
-    const post = qs.parse(body);
-    const id = post.id;
-    const title = post.title;
-    const description = post.description;
-    fs.rename(`data/${id}`, `data/${title}`, (error) => {
-      fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
-        res.redirect('/');
-      });
-    });
+  const post = req.body;
+  const title = post.title;
+  const description = post.description;
+  fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
+    res.redirect('/');
   });
 });
 
 app.use('/delete_process', (req, res) => {
-  let body = '';
-  req.on('data', function (data) {
-    body = body + data;
-  });
-  req.on('end', () => {
-    const post = qs.parse(body);
-    const id = post.id;
-    const filteredId = id;
-    fs.unlink(`data/${filteredId}`, function (error) {
-      res.redirect('/');
-    });
+  const post = req.body;
+  const id = post.id;
+  const filteredId = id;
+  fs.unlink(`data/${filteredId}`, function (error) {
+    res.redirect('/');
   });
 });
 
