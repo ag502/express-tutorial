@@ -17,7 +17,8 @@ router.get('/login', (req, res) => {
             <p><input type="submit"/></p>
         </form>
     `,
-    `<a href='/topic/create'>create</a>`
+    `<a href='/topic/create'>create</a>`,
+    req.loginUI
   );
   res.send(html);
 });

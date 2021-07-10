@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const cookieParser = require('cookie-parser');
 const compression = require('compression');
 const fs = require('fs');
 const qs = require('querystring');
@@ -12,6 +13,8 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(compression());
+app.use(cookieParser());
+
 app.get('*', (req, res, next) => {
   fs.readdir('./data', (error, files) => {
     if (error) {
@@ -22,6 +25,18 @@ app.get('*', (req, res, next) => {
     }
   });
 });
+app.get('*', (req, res, next) => {
+  req.loginUI = '<a href="/login">로그인</a>';
+  if (req.cookies) {
+    const { email, password } = req.cookies;
+    if (email === 'ag502@naver.com' && password === '111') {
+      req.loginUI = '<a href="/login_process">로그아웃</a>';
+      console.log('a');
+    }
+  }
+  next();
+});
+
 app.use(mainRouter);
 app.use(loginRouter);
 app.use('/topic', topicRouter);

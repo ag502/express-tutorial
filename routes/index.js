@@ -13,7 +13,8 @@ router.get('/', (req, res) => {
     `<h2>${title}</h2>${description}
       <img src="/img/hello.jpg"/>
       `,
-    `<a href='/topic/create'>create</a>`
+    `<a href='/topic/create'>create</a>`,
+    req.loginUI
   );
   res.send(html);
 });
