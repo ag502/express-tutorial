@@ -12,14 +12,25 @@ router.get('/login', (req, res) => {
     list,
     `
         <form action="/login_process" method="post">
-            <p><input type="email"/></p>
-            <p><input type="password"/></p>
+            <p><input type="email" name="email"/></p>
+            <p><input type="password" name="password"/></p>
             <p><input type="submit"/></p>
         </form>
     `,
     `<a href='/topic/create'>create</a>`
   );
   res.send(html);
+});
+
+router.post('/login_process', (req, res) => {
+  const { email, password } = req.body;
+  if (email === 'ag502@naver.com' && password === '111') {
+    res.cookie('email', email);
+    res.cookie('password', password);
+    res.redirect('/');
+  } else {
+    console.log('Who?');
+  }
 });
 
 module.exports = router;
