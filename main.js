@@ -30,7 +30,7 @@ app.get('*', (req, res, next) => {
   if (req.cookies) {
     const { email, password } = req.cookies;
     if (email === 'ag502@naver.com' && password === '111') {
-      req.loginUI = '<a href="/login_process">로그아웃</a>';
+      req.loginUI = '<a href="/logout_process">로그아웃</a>';
       console.log('a');
     }
   }

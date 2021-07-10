@@ -34,4 +34,10 @@ router.post('/login_process', (req, res) => {
   }
 });
 
+router.get('/logout_process', (req, res) => {
+  res.clearCookie('email');
+  res.clearCookie('password');
+  res.redirect('/');
+});
+
 module.exports = router;
