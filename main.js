@@ -5,6 +5,7 @@ const fs = require('fs');
 const qs = require('querystring');
 const template = require('./lib/template');
 const mainRouter = require('./routes/index');
+const loginRouter = require('./routes/login');
 const topicRouter = require('./routes/topic');
 
 app.use(express.static('public'));
@@ -22,6 +23,7 @@ app.get('*', (req, res, next) => {
   });
 });
 app.use(mainRouter);
+app.use(loginRouter);
 app.use('/topic', topicRouter);
 
 app.use((req, res, next) => {
