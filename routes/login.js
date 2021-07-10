@@ -26,9 +26,11 @@ router.get('/login', (req, res) => {
 router.post('/login_process', (req, res) => {
   const { email, password } = req.body;
   if (email === 'ag502@naver.com' && password === '111') {
-    res.cookie('email', email);
-    res.cookie('password', password);
-    res.redirect('/');
+    console.log(req.session);
+    req.session.isLogin = true;
+    req.session.save(() => {
+      res.redirect('/');
+    });
   } else {
     console.log('Who?');
   }
